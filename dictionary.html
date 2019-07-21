@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Dictionary</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  </head>
+  <body class="bg-light">
+    <div ng-app="myDic" ng-controller="dicCtrl">
+      <div class="py-5 mx-auto" style="width: 500px">
+        <h1 class="text-center mb-3">Dictionary</h1>
+        <input
+          class="form-control"
+          type="text"
+          placeholder="Word"
+          ng-model="word"
+        />
+        <button
+          id="srBtn"
+          class="btn btn-success btn-block mt-2"
+          ng-click="search(word);"
+        >
+          Search
+        </button>
+        <h3 class="mt-3">{{data.word}}</h3>
+        <h5 class="text-center">{{ loading }}</h5>
+        <hr />
+        <ul>
+          <li ng-repeat="(key, value) in data.meaning">
+            <h6>{{ key }}</h6>
+            <ol>
+              <li ng-repeat="x in value">
+                <p class="text-justify">
+                  <b>Meaning:</b> {{ x.definition }}
+                  <br />
+                  <b>Example:</b> {{ x.example }}
+                </p>
+              </li>
+            </ol>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <script>
+      function makeBlur() {
+        document.getElementById("srBtn").blur();
+      }
+      var app = angular.module("myDic", []);
+      app.controller("dicCtrl", function($scope, $http) {
+        $scope.search = function(word, btn) {
+          if (!word) {
+            $scope.loading = "Something Went Worng!!!";
+            return;
+          }
+          $scope.data = {};
+          $scope.loading = "Loadding.....";
+          $http
+            .get(
+              "https://googledictionaryapi.eu-gb.mybluemix.net/?define=" +
+                word +
+                "&lang=en"
+            )
+            .then(
+              function(res) {
+                $scope.data = res.data[0];
+                $scope.loading = "Meanings:";
+                makeBlur();
+              },
+              function(res) {
+                $scope.loading = "Something Went Worng!!!";
+                makeBlur();
+              }
+            );
+        };
+      });
+    </script>
+  </body>
+</html>
