@@ -20,8 +20,10 @@
         <input
           class="form-control"
           type="text"
+          id="inputField"
           placeholder="Word"
           ng-model="word"
+          ng-keydown="kyeChack($event.key)"
         />
         <button
           id="srBtn"
@@ -31,7 +33,7 @@
           Search
         </button>
         <h3 class="mt-3">{{data.word}}</h3>
-        <h5 class="text-center">{{ loading }}</h5>
+        <h5 class="text-center">{{ message }}</h5>
         <hr />
         <ul>
           <li ng-repeat="(key, value) in data.meaning">
@@ -52,16 +54,18 @@
     <script>
       function makeBlur() {
         document.getElementById("srBtn").blur();
+        document.getElementById("inputField").blur();
       }
       var app = angular.module("myDic", []);
       app.controller("dicCtrl", function($scope, $http) {
         $scope.search = function(word, btn) {
+          $scope.data = {};
           if (!word) {
-            $scope.loading = "Something Went Worng!!!";
+            $scope.message = "Please Enter a Valid Word.";
+            makeBlur();
             return;
           }
-          $scope.data = {};
-          $scope.loading = "Loadding.....";
+          $scope.message = "Loadding.....";
           $http
             .get(
               "https://googledictionaryapi.eu-gb.mybluemix.net/?define=" +
@@ -71,15 +75,22 @@
             .then(
               function(res) {
                 $scope.data = res.data[0];
-                $scope.loading = "Meanings:";
+                $scope.message = "Meanings:";
                 makeBlur();
               },
               function(res) {
-                $scope.loading = "Word Not Found!!!";
+                $scope.message = "Word Not Found!!!";
                 makeBlur();
               }
             );
         };
+
+        $scope.kyeChack = function(key){
+          if(key == "Enter"){
+            $scope.search($scope.word)
+          }
+        }
+
       });
     </script>
   </body>
