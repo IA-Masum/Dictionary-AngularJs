@@ -68,10 +68,8 @@
           $scope.message = "Loadding.....";
           $http
             .get(
-              "https://googledictionaryapi.eu-gb.mybluemix.net/?define=" +
-                word +
-                "&lang=en"
-            )
+              "https://api.dictionaryapi.dev/api/v1/entries/en/" +
+                word)
             .then(
               function(res) {
                 $scope.data = res.data[0];
